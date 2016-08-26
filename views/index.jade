@@ -1,0 +1,40 @@
+doctype html
+
+html
+  head
+    meta(charest="utf-8")
+    title 电子白板
+    link(rel="stylesheet" href="css/index.css")
+    script(src="socket.io/socket.io.js" defer="defer")
+    script(src="js/index.js" defer="defer")
+    script(src="js/client.js" defer="defer")
+  body
+    h1 电子白板
+    div(id="container")
+      div(class="leftContent box")
+        h2 画板
+        div(id="canvasContent")
+          canvas(id="paintCanvas" height="600")
+        div(class="options")
+          div
+            div(id="colorList")
+              span 颜色
+              input(type="color")
+            div(id="lineWidth")
+              span 线宽
+              input(type="range" name="range" min="1" max="10" value="1")
+              span(id="rangeValue") 1
+          div(id="effects")
+            div(id="pen" class="btn btn-active-able" style="background-image: url('images/pencil.png')")
+            div(id="earse" class="btn btn-active-able" style="background-image: url('images/eraser.png')")
+            div(id="clearAll" class="btn" style="background-image: url('images/pencil.png')")
+            div(id="undo" class="btn" style="background-image: url('images/undo.png')")
+            div(id="redo" class="btn" style="background-image: url('images/redo.png')")
+            div(id="download" class="btn" style="background-image: url('images/download.png')")
+
+      div(class="rightContent box")
+        h2 消息框
+        div(id="showMsg")
+        div(class="msg")
+          input(type="text" id="msgInput" placeholder="请输入你的消息，按回车键发送消息")
+          button(id="sendBtn") 发送

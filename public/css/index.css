@@ -1,0 +1,108 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+#container {
+  margin: 0px 5px;
+}
+
+canvas {
+  border-top: 1px solid darkgrey;
+  border-bottom: 1px solid darkgrey;
+}
+
+.box {
+  border: 1px solid gray;
+  border-radius: 5px;
+  box-shadow: 0px 0px 3px 3px #bbb;
+}
+
+.leftContent {
+  float: left;
+  width: 70%;
+}
+
+.options {
+  /*height: 60px;*/
+  overflow: hidden;
+}
+
+.options > div:first-child {
+  padding: 6px;
+  width: 68%;
+  float: left;
+}
+
+#effects {
+  width: 30%;
+  margin-left: 70%;
+  text-align: right;
+  margin-top: 20px;
+}
+
+.btn {
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  margin: 2px;
+  padding: 0;
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 3px;
+  display: inline-block;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: black;
+}
+
+.selected {
+  background-color: #a1d9fe;
+}
+
+#colorList {
+  margin-bottom: 8px;
+}
+
+#lineWidth input {
+  vertical-align: middle;
+}
+
+
+
+.rightContent {
+  margin-left: 71%;
+}
+
+.rightContent input {
+  width: 73%;
+  float: left;
+  height: 30px;
+}
+
+.msg {
+  margin: 5px;
+}
+
+#sendBtn {
+  width: 25%;
+  height: 36px;
+  margin-left: 75%;
+  font-size: 1.1em;
+  display: block;
+  vertical-align: middle;
+}
+
+#showMsg {
+  height: 400px;
+  padding: 0px 5px;
+  overflow: scroll;
+  overflow-x: hidden;
+}
