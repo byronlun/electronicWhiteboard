@@ -1,1 +1,1 @@
-# electronicWhiteboard用canvas, express, socket.io实现的电子画板
+# electronicWhiteboard用canvas, express, socket.io实现的一个简单电子画板
