@@ -6,13 +6,18 @@ var showMsg = document.getElementById('showMsg'),
     canvas = document.getElementsByTagName('canvas')[0],
     ctx = canvas.getContext('2d');
 
-var range = document.querySelector('input[type=range]');
+var range = document.querySelector('input[type=range]'),
+    colorInput = document.querySelector('input[type=color]');
 
-window.addEventListener('resize', function () {
-  canvas.width = canvas.parentNode.offsetWidth;
-});
 window.addEventListener('load', function() {
   canvas.width = canvas.parentNode.offsetWidth;
+  this.addEventListener('resize', function (e) {
+    canvas.width = canvas.parentNode.offsetWidth;
+    canvas.paths = [];
+    canvas.pts = [];
+    socket.emit('repaint');
+  });
+  
   console.log('load');
   ctl.init();
   
@@ -42,6 +47,12 @@ canvas.addEventListener('mouseup', function (e) {
   ctl.addPath(this.pts);
   socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
   ctl.clearPos();
+});
+
+//颜色变化
+colorInput.addEventListener('change', function () {
+  canvas.color = colorInput.value;
+  console.log(canvas.color);
 });
 
 //线条变化的

@@ -12,6 +12,10 @@ h1, h2 {
   margin: 0px 5px;
 }
 
+#canvasContent {
+  
+}
+
 canvas {
   border-top: 1px solid darkgrey;
   border-bottom: 1px solid darkgrey;
@@ -25,7 +29,11 @@ canvas {
 
 .leftContent {
   float: left;
-  width: 70%;
+  width: 100%;
+  margin-right: -400px;
+}
+.leftContent>div {
+  margin-right: 400px;
 }
 
 .options {
@@ -78,7 +86,8 @@ canvas {
 
 
 .rightContent {
-  margin-left: 71%;
+  float: right;
+  width: 380px;
 }
 
 .rightContent input {

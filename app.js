@@ -14,8 +14,10 @@ app.get('/', function(req, res) {
 
 
 var paths = [];
+var count = 0;
 
 io.sockets.on('connection', function (socket) {
+  count++;
   socket.on('login', function(name) {
     this.name = name || '无名氏';
     this.emit('server msg', '欢迎　' + this.name + '　的参与！');
@@ -31,7 +33,6 @@ io.sockets.on('connection', function (socket) {
       data = date + '</br>' + this.name + '说: ' + data
       this.emit('server msg', data);
       this.broadcast.emit('server msg', data);
-
     });
 
     //画图时
@@ -47,6 +48,18 @@ io.sockets.on('connection', function (socket) {
           paths.push(pts);
           break;
       }
+    });
+
+    this.on('repaint', function () {
+      this.emit('paint path', JSON.stringify(paths));
+    });
+
+    this.on('disconnect', function () {
+      count--;
+      if(count) {
+        paths = [];
+      }
+      console.log(count);
     });
   });
   socket.emit('login');
