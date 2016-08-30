@@ -18,6 +18,7 @@ var count = 0;
 
 io.sockets.on('connection', function (socket) {
   count++;
+  console.log(count);
   socket.on('login', function(name) {
     this.name = name || '无名氏';
     this.emit('server msg', '欢迎　' + this.name + '　的参与！');
@@ -38,13 +39,14 @@ io.sockets.on('connection', function (socket) {
     //画图时
     this.on('paint', function(data) {
       data = JSON.parse(data);
-      var pts = data.data.pts;
+      var pts = data.data;
       switch (data.status) {
         case 'drawing': 
           this.broadcast.emit('paint pts', JSON.stringify(pts));
           break;
         case 'drawed': 
           this.broadcast.emit('paint pts', JSON.stringify(pts));
+          pts.tag = 'paint';
           paths.push(pts);
           break;
       }
@@ -54,9 +56,15 @@ io.sockets.on('connection', function (socket) {
       this.emit('paint path', JSON.stringify(paths));
     });
 
+    //橡皮擦时
+    this.on('erase',function (x,y,w,h) {
+      paths.push({tag:'erase',x:x,y:y,w:w,h:h});
+      this.broadcast.emit('erase',x,y,w,h);
+    });
+
     this.on('disconnect', function () {
       count--;
-      if(count) {
+      if(!count) {
         paths = [];
       }
       console.log(count);

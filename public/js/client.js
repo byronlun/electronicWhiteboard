@@ -12,7 +12,6 @@ socket.on('server msg', function (data) {
 
 socket.on('paint pts', function (pts) {
   var pts = JSON.parse(pts);
-  console.log(pts);
   if(!pts) return;
   ctl.drawPts(ctx, pts);
 });
@@ -20,7 +19,15 @@ socket.on('paint pts', function (pts) {
 socket.on('paint path', function (paths) {
   var paths = JSON.parse(paths);
   paths.forEach(function (pts) {
-    ctl.drawPts(ctx, pts);
+    console.log(pts.tag);
+    if (pts.tag === 'paint') {
+      ctl.drawPts(ctx, pts);
+    } else {
+      new Rect(pts.x, pts.y, pts.w, pts.h).clearRT(ctx);
+    }
   });
-  console.log(paths);
+});
+
+socket.on('erase', function (x,y,w,h) {
+  new Rect(x,y,w,h).clearRT(ctx);
 });

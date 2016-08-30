@@ -25,9 +25,16 @@ window.addEventListener('load', function() {
 
 //canvas添加鼠标事件
 canvas.addEventListener('mousedown', function (e) {
-  var x = e.offsetX, y = e.offsetY;
-  ctl.clearPos();
-  ctl.addPos(x, y);
+  if (effects.states === 'pen') {
+    var x = e.offsetX, y = e.offsetY;
+    ctl.clearPos();
+    ctl.addPos(x, y);
+  } else if (effects.states === 'erase') {
+    var w=20,h=20;
+    var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
+    rect.clearRT(ctx);
+    socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
+  }
 });
 canvas.addEventListener('mousemove', function (e) {
   if(e.buttons === 1) {
@@ -36,23 +43,29 @@ canvas.addEventListener('mousemove', function (e) {
       ctl.addPos(x, y);
       ctl.drawPts(ctx, this.pts);
       socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawing'}));
-    } else if(effects.states === 'earse') {
-
+    } else if(effects.states === 'erase') {
+      var w=20,h=20;
+      var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
+      rect.clearRT(ctx);
+      socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
     }
   }
 });
 canvas.addEventListener('mouseup', function (e) {
-  var x = e.offsetX, y = e.offsetY;
-  ctl.addPos(x, y);
-  ctl.addPath(this.pts);
-  socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
-  ctl.clearPos();
+  if(effects.states === 'erase') {
+    return ;
+  } else if (effects.states === 'pen') {
+    var x = e.offsetX, y = e.offsetY;
+    ctl.addPos(x, y);
+    ctl.addPath(this.pts);
+    socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
+    ctl.clearPos();
+  }
 });
 
 //颜色变化
 colorInput.addEventListener('change', function () {
   canvas.color = colorInput.value;
-  console.log(canvas.color);
 });
 
 //线条变化的
@@ -113,8 +126,8 @@ effects.addEventListener('click', function (event) {
       case 'pen':
         effects.states = 'pen';
         break;
-      case 'earse':
-        effects.states = 'earse';
+      case 'erase':
+        effects.states = 'erase';
         break;
       case 'clearAll':
         effects.states = 'clearAll';
@@ -185,8 +198,8 @@ function Point(x, y) {
 
 function Path(pts, lw, color) {
   this.pts = pts;
-  this.lw = lw;
-  this.color = color;
+  this.lw = lw || canvas.lw;
+  this.color = color || canvas.color;
 }
 
 function Rect(x, y, h, w) {
@@ -196,6 +209,6 @@ function Rect(x, y, h, w) {
   this.w = w;
 }
 
-Rect.prototype.clear = function (ctx) {
+Rect.prototype.clearRT = function (ctx) {
   ctx.clearRect(this.x,this.y,this.w,this.h);
 }
