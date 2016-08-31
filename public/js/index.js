@@ -131,6 +131,12 @@ effects.addEventListener('click', function (event) {
         break;
       case 'clearAll':
         effects.states = 'clearAll';
+        //清除所有客户端画布内容
+        console.log('clearAll');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.paths = [];
+        ctx.pts = [];
+        socket.emit('clearAll');
         break;
       case 'undo':
         effects.states = 'undo';

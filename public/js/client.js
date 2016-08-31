@@ -31,3 +31,7 @@ socket.on('paint path', function (paths) {
 socket.on('erase', function (x,y,w,h) {
   new Rect(x,y,w,h).clearRT(ctx);
 });
+
+socket.on('clearAll', function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});

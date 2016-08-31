@@ -62,6 +62,11 @@ io.sockets.on('connection', function (socket) {
       this.broadcast.emit('erase',x,y,w,h);
     });
 
+    this.on('clearAll', function () {
+      paths = [];
+      this.broadcast.emit('clearAll');
+    });
+
     this.on('disconnect', function () {
       count--;
       if(!count) {
