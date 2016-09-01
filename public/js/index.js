@@ -34,6 +34,9 @@ canvas.addEventListener('mousedown', function (e) {
     var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
     rect.clearRT(ctx);
     socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
+  } else if (effects.states === 'undo') {
+    console.log('undo');
+    
   }
 });
 canvas.addEventListener('mousemove', function (e) {
@@ -83,6 +86,20 @@ sendBtn.addEventListener('click', function() {
   }
 });
 
+//用于下载,并且设置下载图片格式
+var downloadA = document.getElementById('downloadA');
+downloadA.addEventListener('click', function () {
+  console.log(';');
+  var myDate = new Date();
+  var year = myDate.getFullYear();
+  var month = myDate.getMonth() + 1;
+  var day = myDate.getDate();
+  var hour = myDate.getHours();
+  var min = myDate.getMinutes();
+  this.download = year + '-' + month + '-' + day + ' ' + hour + ':' + min + '.png';
+  this.href = canvas.toDataURL();
+});
+
 //功能按钮
 effects.addEventListener('click', function (event) {
   // if(event.target.className.indexOf('selected') !== -1) {
@@ -104,7 +121,7 @@ effects.addEventListener('click', function (event) {
   //用来保存当前按钮的功能状态
   effects.states = '';
 
-  if(target.classList.contains('btn')) {
+  if (target.classList.contains('dClick')) {
     if(this.preBtn) {
       this.preBtn.classList.remove('selected');
       if (this.preBtn === target) {
@@ -120,7 +137,15 @@ effects.addEventListener('click', function (event) {
       effects.on = true;
       this.preBtn = target;
     }
+  } else {
+    if (this.preBtn) {
+      this.preBtn.classList.remove('selected');
+    }
+    target.classList.add('selected');
+    this.preBtn = target;
+    effects.on = true;
   }
+    
   if (effects.on) {
     switch (target.id) {
       case 'pen':
@@ -146,6 +171,7 @@ effects.addEventListener('click', function (event) {
         break;
       case 'download':
         effects.states = 'download';
+        downloadA.click();
         break;
       default:
         effects.states = '';
