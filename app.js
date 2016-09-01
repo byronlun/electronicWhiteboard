@@ -13,8 +13,10 @@ app.get('/', function(req, res) {
 });
 
 
-var paths = [];
-var count = 0;
+var paths = [],
+    
+    redoArr = [],
+    count = 0;
 
 io.sockets.on('connection', function (socket) {
   count++;
@@ -38,6 +40,7 @@ io.sockets.on('connection', function (socket) {
 
     //画图时
     this.on('paint', function(data) {
+      redoArr = [];
       data = JSON.parse(data);
       var pts = data.data;
       switch (data.status) {
@@ -56,15 +59,27 @@ io.sockets.on('connection', function (socket) {
       this.emit('paint path', JSON.stringify(paths));
     });
 
-    //橡皮擦时
-    this.on('erase',function (x,y,w,h) {
-      paths.push({tag:'erase',x:x,y:y,w:w,h:h});
-      this.broadcast.emit('erase',x,y,w,h);
-    });
-
+    //清除整张画布
     this.on('clearAll', function () {
       paths = [];
       this.broadcast.emit('clearAll');
+    });
+
+    //撤销
+    this.on('undo', function() {
+      if(!paths.length) return;
+      var currentPath = paths.pop();
+      redoArr.push(currentPath);
+      socket.emit('paint path', JSON.stringify(paths));
+      socket.broadcast.emit('paint path', JSON.stringify(paths));
+    });
+
+    //反撤销
+    this.on('redo', function() {
+      if(!redoArr.length) return;
+      paths.push(redoArr.pop());
+      socket.emit('paint path', JSON.stringify(paths));
+      socket.broadcast.emit('paint path', JSON.stringify(paths));
     });
 
     this.on('disconnect', function () {

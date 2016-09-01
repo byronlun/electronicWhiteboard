@@ -3,6 +3,8 @@ var showMsg = document.getElementById('showMsg'),
     msgInput = document.getElementById('msgInput'),
     paintCanvas = document.getElementById('paintCanvas'),
     effects = document.getElementById('effects'),
+    undo = document.getElementById('undo'),
+    redo = document.getElementById('redo'),
     canvas = document.getElementsByTagName('canvas')[0],
     ctx = canvas.getContext('2d');
 
@@ -25,42 +27,36 @@ window.addEventListener('load', function() {
 
 //canvas添加鼠标事件
 canvas.addEventListener('mousedown', function (e) {
-  if (effects.states === 'pen') {
+  if (effects.states === 'pen' || effects.states === 'erase') {
     var x = e.offsetX, y = e.offsetY;
     ctl.clearPos();
     ctl.addPos(x, y);
-  } else if (effects.states === 'erase') {
-    var w=20,h=20;
-    var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
-    rect.clearRT(ctx);
-    socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
-  } else if (effects.states === 'undo') {
-    console.log('undo');
-    
   }
 });
 canvas.addEventListener('mousemove', function (e) {
   if(e.buttons === 1) {
     var x = e.offsetX, y = e.offsetY;
+    ctl.addPos(x, y);
     if (effects.states === 'pen') {
-      ctl.addPos(x, y);
+      
+      canvas.color = colorInput.value;
       ctl.drawPts(ctx, this.pts);
       socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawing'}));
     } else if(effects.states === 'erase') {
-      var w=20,h=20;
-      var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
-      rect.clearRT(ctx);
-      socket.emit('erase',rect.x,rect.y,rect.w,rect.h);
+      canvas.color = 'white';
+      ctl.drawPts(ctx, this.pts);
+      socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawing'}));
     }
   }
 });
 canvas.addEventListener('mouseup', function (e) {
+  var x = e.offsetX, y = e.offsetY;
+  ctl.addPos(x, y);
+  ctl.addPath(this.pts);
   if(effects.states === 'erase') {
-    return ;
+    socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
+    ctl.clearPos();
   } else if (effects.states === 'pen') {
-    var x = e.offsetX, y = e.offsetY;
-    ctl.addPos(x, y);
-    ctl.addPath(this.pts);
     socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
     ctl.clearPos();
   }
@@ -85,6 +81,20 @@ sendBtn.addEventListener('click', function() {
     console.log('输入为空');
   }
 });
+
+//撤销上一步
+undo.addEventListener('click', function () {
+  console.log('undo');
+  socket.emit('undo');
+});
+
+//反撤销
+redo.addEventListener('click', function () {
+  console.log('redo');
+  socket.emit('redo');
+});
+
+
 
 //用于下载,并且设置下载图片格式
 var downloadA = document.getElementById('downloadA');
@@ -234,13 +244,13 @@ function Path(pts, lw, color) {
   this.color = color || canvas.color;
 }
 
-function Rect(x, y, h, w) {
-  this.x = x;
-  this.y = y;
-  this.h = h;
-  this.w = w;
-}
+// function Rect(x, y, h, w) {
+//   this.x = x;
+//   this.y = y;
+//   this.h = h;
+//   this.w = w;
+// }
 
-Rect.prototype.clearRT = function (ctx) {
-  ctx.clearRect(this.x,this.y,this.w,this.h);
-}
+// Rect.prototype.clearRT = function (ctx) {
+//   ctx.clearRect(this.x,this.y,this.w,this.h);
+// }

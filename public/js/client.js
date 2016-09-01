@@ -18,18 +18,10 @@ socket.on('paint pts', function (pts) {
 
 socket.on('paint path', function (paths) {
   var paths = JSON.parse(paths);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   paths.forEach(function (pts) {
-    console.log(pts.tag);
-    if (pts.tag === 'paint') {
-      ctl.drawPts(ctx, pts);
-    } else {
-      new Rect(pts.x, pts.y, pts.w, pts.h).clearRT(ctx);
-    }
+    ctl.drawPts(ctx, pts);
   });
-});
-
-socket.on('erase', function (x,y,w,h) {
-  new Rect(x,y,w,h).clearRT(ctx);
 });
 
 socket.on('clearAll', function () {
