@@ -20,7 +20,25 @@ socket.on('paint path', function (paths) {
   var paths = JSON.parse(paths);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   paths.forEach(function (pts) {
-    ctl.drawPts(ctx, pts);
+    console.log(pts.tag);
+    if (pts.tag === 'paint') {
+      console.log('paint');
+      ctl.drawPts(ctx, pts);
+    } else if (pts.tag === 'erase') {
+      console.log('erase');
+      pts.eraseRects.forEach(function (rect) {
+        new Rect(rect.x, rect.y, rect.w, rect.h).clearRT(ctx);
+      });
+    }
+    
+  });
+});
+
+socket.on('erase', function (eraseRects) {
+  var eraseRects = JSON.parse(eraseRects);
+  console.log(eraseRects);
+  eraseRects.forEach(function (rect) {
+    new Rect(rect.x, rect.y, rect.w, rect.h).clearRT(ctx);
   });
 });
 

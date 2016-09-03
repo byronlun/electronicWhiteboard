@@ -27,38 +27,48 @@ window.addEventListener('load', function() {
 
 //canvas添加鼠标事件
 canvas.addEventListener('mousedown', function (e) {
-  if (effects.states === 'pen' || effects.states === 'erase') {
-    var x = e.offsetX, y = e.offsetY;
+  var x = e.offsetX, y = e.offsetY;
+  if (effects.states === 'pen') {
     ctl.clearPos();
     ctl.addPos(x, y);
+  } else if(effects.states === 'erase') {
+    eraseRects = [];
+    var w = 10, h = 10;
+    var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
+    rect.clearRT(ctx);
+    eraseRects.push(rect);
+    return;
   }
 });
 canvas.addEventListener('mousemove', function (e) {
   if(e.buttons === 1) {
     var x = e.offsetX, y = e.offsetY;
-    ctl.addPos(x, y);
     if (effects.states === 'pen') {
-      
+      ctl.addPos(x, y);
       canvas.color = colorInput.value;
       ctl.drawPts(ctx, this.pts);
       socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawing'}));
     } else if(effects.states === 'erase') {
-      canvas.color = 'white';
-      ctl.drawPts(ctx, this.pts);
-      socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawing'}));
+      var w = 10, h = 10;
+      var rect = new Rect(x-(w>>>1),y-(h>>>1),w,h);
+      rect.clearRT(ctx);
+      eraseRects.push(rect);
+      socket.emit('erase', JSON.stringify({data: eraseRects, status: 'erasing'}));
+      return;
     }
   }
 });
 canvas.addEventListener('mouseup', function (e) {
   var x = e.offsetX, y = e.offsetY;
-  ctl.addPos(x, y);
-  ctl.addPath(this.pts);
-  if(effects.states === 'erase') {
+  if(effects.states === 'pen') {
+    ctl.addPos(x, y);
+    ctl.addPath(this.pts);
     socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
     ctl.clearPos();
-  } else if (effects.states === 'pen') {
-    socket.emit('paint', JSON.stringify({data: new Path(this.pts), status: 'drawed'}));
-    ctl.clearPos();
+  } else if(effects.states === 'erase') {
+    socket.emit('erase', JSON.stringify({data: {eraseRects: eraseRects}, status: 'erased'}));
+    eraseRects = [];
+    return ;
   }
 });
 
@@ -204,6 +214,7 @@ var ctl = {
   init: function () {
     canvas.pts = [];    //点数组
     canvas.paths = [];  //路径数组
+    canvas.eraseRects = []; //矩形数据
     canvas.lw = 1;
     canvas.color = 'black';
   },
@@ -251,13 +262,13 @@ function Path(pts, lw, color) {
   this.color = color || canvas.color;
 }
 
-// function Rect(x, y, h, w) {
-//   this.x = x;
-//   this.y = y;
-//   this.h = h;
-//   this.w = w;
-// }
+function Rect(x, y, h, w) {
+  this.x = x;
+  this.y = y;
+  this.h = h;
+  this.w = w;
+}
 
-// Rect.prototype.clearRT = function (ctx) {
-//   ctx.clearRect(this.x,this.y,this.w,this.h);
-// }
+Rect.prototype.clearRT = function (ctx) {
+  ctx.clearRect(this.x,this.y,this.w,this.h);
+}

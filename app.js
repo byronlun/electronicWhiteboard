@@ -47,6 +47,7 @@ io.sockets.on('connection', function (socket) {
     this.broadcast.emit('server msg', '欢迎　' + this.name + '　的参与！');
     //当客户端连接时,如果白板已有内容,渲染出来
     if(paths.length) {
+      console.log(paths);
       this.emit('paint path', JSON.stringify(paths));
     }
     // 客户端发言
@@ -61,7 +62,7 @@ io.sockets.on('connection', function (socket) {
     //画图时
     this.on('paint', function(data) {
       redoArr = [];
-      data = JSON.parse(data);
+      var data = JSON.parse(data);
       var pts = data.data;
       switch (data.status) {
         case 'drawing': 
@@ -75,6 +76,24 @@ io.sockets.on('connection', function (socket) {
       }
     });
 
+    this.on('erase', function(data) {
+      redoArr = [];
+      var data = JSON.parse(data);
+      var pts = data.data;
+      switch(data.status) {
+        case 'erasing': 
+          this.broadcast.emit('erase', JSON.stringify(pts));
+          break;
+        case 'erased':
+          this.broadcast.emit('erase', JSON.stringify(pts));
+          pts.tag = 'erase';
+          console.log('erased');
+          paths.push(pts);
+          break;
+      }
+    });
+
+    //重画
     this.on('repaint', function () {
       this.emit('paint path', JSON.stringify(paths));
     });
