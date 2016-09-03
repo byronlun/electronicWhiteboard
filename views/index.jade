@@ -33,7 +33,10 @@ html
             div(id="redo" class="btn" style="background-image: url('images/redo.png')")
             div(id="download" class="btn" style="background-image: url('images/download.png')")
               a(id="downloadA")
-
+        div(class="box")
+          form(action="/" method="post" enctype="multipart/form-data")
+            input(type="file" name="uploadBg" )
+            input(type="submit" value="上传文件" id="uploadBtn")      
       div(class="rightContent box")
         h2 消息框
         div(id="showMsg")

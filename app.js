@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var multer = require('multer');
 
 server.listen(3030);
 
@@ -13,8 +14,27 @@ app.get('/', function(req, res) {
 });
 
 
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/images/');
+  },
+  filename: function (req, file, cb) {
+    cb(null , 'background.png');
+  }
+});
+
+upload = multer({
+  storage: storage
+});
+
+
+app.post('/', upload.single('uploadBg'), function(req, res) {
+  console.log(req.file); //form files
+  res.status(204).end();
+});
+
+//一些全局变量
 var paths = [],
-    
     redoArr = [],
     count = 0;
 
@@ -80,6 +100,12 @@ io.sockets.on('connection', function (socket) {
       paths.push(redoArr.pop());
       socket.emit('paint path', JSON.stringify(paths));
       socket.broadcast.emit('paint path', JSON.stringify(paths));
+    });
+
+    //上传背景图
+    this.on('uploadBg', function () {
+      socket.emit('uploadBg');
+      socket.broadcast.emit('uploadBg');
     });
 
     this.on('disconnect', function () {

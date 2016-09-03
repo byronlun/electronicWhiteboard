@@ -94,8 +94,6 @@ redo.addEventListener('click', function () {
   socket.emit('redo');
 });
 
-
-
 //用于下载,并且设置下载图片格式
 var downloadA = document.getElementById('downloadA');
 downloadA.addEventListener('click', function () {
@@ -189,6 +187,15 @@ effects.addEventListener('click', function (event) {
     }
   }
   
+});
+
+//上传背景图
+var uploadBtn = document.getElementById('uploadBtn');
+uploadBtn.addEventListener('click', function () {
+  console.log('uploadBtn click');
+  setTimeout(function () {
+    socket.emit('uploadBg');
+  }, 500);
 });
 
 

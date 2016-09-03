@@ -27,3 +27,8 @@ socket.on('paint path', function (paths) {
 socket.on('clearAll', function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
+
+
+socket.on('uploadBg', function () {
+  canvas.style.background = 'url(../images/background.png)';
+});
