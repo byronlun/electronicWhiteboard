@@ -39,6 +39,7 @@ canvas {
 .options {
   /*height: 60px;*/
   overflow: hidden;
+  padding: 10px;
 }
 
 .options > div:first-child {
@@ -52,6 +53,10 @@ canvas {
   margin-left: 70%;
   text-align: right;
   margin-top: 20px;
+}
+
+.fileUploadBox {
+  padding: 20px;
 }
 
 .btn {
@@ -69,6 +74,33 @@ canvas {
   background-repeat: no-repeat;
   background-position: center center;
   color: black;
+  position: relative;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  left: 0px;
+  font-size: 10px;
+}
+#pen::after {
+  content: '画笔';
+}
+#erase::after {
+  content: '橡皮';
+}
+#clearAll::after {
+  content: '清空';
+}
+#undo::after {
+  content: '撤销';
+}
+#redo::after {
+  content: '回撤';
+}
+#download::after {
+  content: '下载';
 }
 
 .selected {

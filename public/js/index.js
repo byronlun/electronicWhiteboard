@@ -87,6 +87,7 @@ range.addEventListener('change', function() {
 sendBtn.addEventListener('click', function() {
   if(msgInput.value) {
     socket.emit('client msg', msgInput.value);
+    msgInput.value = ''
   } else {
     console.log('输入为空');
   }
