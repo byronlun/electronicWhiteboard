@@ -10,4 +10,10 @@
 npm install
 ```
 
-然后浏览器打开 `localhost:3030` 访问页面即可
+然后执行
+
+```js
+npm start
+```
+
+浏览器打开 `localhost:3030` 访问页面即可
